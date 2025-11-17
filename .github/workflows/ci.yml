@@ -1,0 +1,135 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install PlatformIO
+      run: |
+        pip install --upgrade platformio
+        pio --version
+
+    - name: Cache PlatformIO packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.platformio
+        key: ${{ runner.os }}-platformio-${{ hashFiles('**/platformio.ini') }}
+        restore-keys: |
+          ${{ runner.os }}-platformio-
+
+    - name: Run tests
+      run: |
+        pio test -e native -v
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: .pio/test/native/
+        retention-days: 7
+
+  lint:
+    name: Code Linting
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install PlatformIO
+      run: |
+        pip install --upgrade platformio
+        pio --version
+
+    - name: Install clang-tidy
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-tidy
+
+    - name: Run clang-tidy
+      run: |
+        pio check -e native --fail-on-defect=high --severity=high || true
+
+    - name: Upload lint results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: lint-results
+        path: .pio/check/
+        retention-days: 7
+
+  format-check:
+    name: Code Format Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install clang-format
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-format
+
+    - name: Check code formatting
+      run: |
+        find lib test -name "*.cpp" -o -name "*.h" | while read file; do
+          clang-format --dry-run --Werror "$file" || exit 1
+        done
+
+    - name: Show formatting diff (if needed)
+      if: failure()
+      run: |
+        find lib test -name "*.cpp" -o -name "*.h" | while read file; do
+          echo "=== $file ==="
+          clang-format "$file" | diff "$file" - || true
+        done
+
+  docker-test:
+    name: Docker Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Docker image
+      run: docker build -t ble-beacon-parser-test -f Dockerfile .
+
+    - name: Run tests in Docker
+      run: docker run --rm ble-beacon-parser-test pio test -e native -v
+
+    - name: Upload Docker test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: docker-test-results
+        path: .pio/test/native/
+        retention-days: 7
+

@@ -1,0 +1,19 @@
+{
+  "name": "BLEBeaconParser",
+  "version": "1.0.0",
+  "description": "Library-agnostic BLE beacon parser for iBeacon, Eddystone, and AltBeacon",
+  "keywords": ["ble", "beacon", "ibeacon", "eddystone", "altbeacon"],
+  "authors": [
+    {
+      "name": "Josh McArthur",
+      "email": "joshua.mcarthur@gmail.com"
+    }
+  ],
+  "license": "MIT",
+  "frameworks": ["arduino"],
+  "platforms": ["*"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joshmcarthur/BLEBeaconParser.git"
+  }
+}
