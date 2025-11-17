@@ -113,12 +113,22 @@ pio check -e native
 
 ### Docker Testing
 
+The project includes a Dockerfile with all development dependencies pre-installed:
+- PlatformIO Core
+- clang-format
+
 ```bash
 # Build Docker image
 docker build -t ble-beacon-parser-test .
 
 # Run tests in Docker
-docker run --rm ble-beacon-parser-test
+docker run --rm -v $(pwd):/workspace -w /workspace ble-beacon-parser-test pio test -e native -v
+
+# Check code formatting in Docker
+docker run --rm -v $(pwd):/workspace -w /workspace ble-beacon-parser-test ./scripts/check-format.sh
+
+# Format code in Docker
+docker run --rm -v $(pwd):/workspace -w /workspace ble-beacon-parser-test ./scripts/format.sh
 ```
 
 ## Supported Formats
@@ -143,21 +153,28 @@ docker run --rm ble-beacon-parser-test
 
 ## License
 
-MIT License - see LICENSE file for details
+MIT License - see [LICENSE](LICENSE) file for details
 
 ## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Ensure tests pass: `pio test -e native`
-5. Format code: `./scripts/format.sh`
+4. Ensure tests pass: `docker run --rm -v $(pwd):/workspace -w /workspace ble-beacon-parser-test pio test -e native -v  `
+5. Format code: `docker run --rm -v $(pwd):/workspace -w /workspace ble-beacon-parser-test ./scripts/format.sh`
 6. Submit a pull request
 
 ## CI/CD
 
-The project uses GitHub Actions for continuous integration:
-- **Tests**: Runs unit tests on every push/PR
-- **Linting**: Checks code quality with clang-tidy
-- **Format Check**: Verifies code formatting
-- **Docker Test**: Runs tests in Docker environment
+The project uses GitHub Actions for continuous integration, with all jobs running in Docker containers for consistent environments:
+
+- **Tests**: Runs unit tests on every push/PR using Docker
+- **Linting**: Checks code quality with clang-tidy via PlatformIO in Docker
+- **Format Check**: Verifies code formatting using clang-format 21 in Docker
+
+All CI jobs use the same Docker image (defined in `Dockerfile`) which includes:
+- PlatformIO Core
+- clang-format 21 (ensures consistent formatting across local and CI environments)
+- All necessary build tools
+
+This ensures that CI results match local development environments and eliminates version mismatches.
