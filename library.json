@@ -2,7 +2,16 @@
   "name": "BLEBeaconParser",
   "version": "1.0.0",
   "description": "Library-agnostic BLE beacon parser for iBeacon, Eddystone, and AltBeacon",
-  "keywords": ["ble", "beacon", "ibeacon", "eddystone", "altbeacon"],
+  "keywords": [
+    "ble",
+    "beacon",
+    "ibeacon",
+    "eddystone",
+    "altbeacon",
+    "bluetooth",
+    "advertisement",
+    "parsing"
+  ],
   "authors": [
     {
       "name": "Josh McArthur",
@@ -15,5 +24,10 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/joshmcarthur/BLEBeaconParser.git"
-  }
+  },
+  "homepage": "https://github.com/joshmcarthur/BLEBeaconParser",
+  "examples": [
+    "lib/BLEBeaconParser/examples/generic_example/main.cpp",
+    "lib/BLEBeaconParser/examples/bluefruit_example/main.cpp"
+  ]
 }
