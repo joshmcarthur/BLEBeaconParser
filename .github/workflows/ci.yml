@@ -27,15 +27,6 @@ jobs:
         tags: ble-beacon-parser:ci
         cache-from: type=gha
         cache-to: type=gha,mode=max
-
-    - name: Cache PlatformIO packages
-      uses: actions/cache@v4
-      with:
-        path: ~/.platformio
-        key: ${{ runner.os }}-platformio-${{ hashFiles('**/platformio.ini') }}
-        restore-keys: |
-          ${{ runner.os }}-platformio-
-
     - name: Run tests
       run: |
         docker run --rm \
