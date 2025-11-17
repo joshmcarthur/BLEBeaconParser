@@ -15,28 +15,35 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
 
-    - name: Install PlatformIO
-      run: |
-        pip install --upgrade platformio
-        pio --version
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: false
+        load: true
+        tags: ble-beacon-parser:ci
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
 
     - name: Cache PlatformIO packages
       uses: actions/cache@v4
       with:
-        path: |
-          ~/.platformio
+        path: ~/.platformio
         key: ${{ runner.os }}-platformio-${{ hashFiles('**/platformio.ini') }}
         restore-keys: |
           ${{ runner.os }}-platformio-
 
     - name: Run tests
       run: |
-        pio test -e native -v
+        docker run --rm \
+          -v ${{ github.workspace }}:/workspace \
+          -v ~/.platformio:/root/.platformio \
+          -w /workspace \
+          ble-beacon-parser:ci \
+          pio test -e native -v
 
     - name: Upload test results
       if: always()
@@ -54,24 +61,35 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
       with:
-        python-version: '3.11'
+        context: .
+        push: false
+        load: true
+        tags: ble-beacon-parser:ci
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
 
-    - name: Install PlatformIO
-      run: |
-        pip install --upgrade platformio
-        pio --version
-
-    - name: Install clang-tidy
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y clang-tidy
+    - name: Cache PlatformIO packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.platformio
+        key: ${{ runner.os }}-platformio-${{ hashFiles('**/platformio.ini') }}
+        restore-keys: |
+          ${{ runner.os }}-platformio-
 
     - name: Run clang-tidy
       run: |
-        pio check -e native --fail-on-defect=high --severity=high || true
+        docker run --rm \
+          -v ${{ github.workspace }}:/workspace \
+          -v ~/.platformio:/root/.platformio \
+          -w /workspace \
+          ble-beacon-parser:ci \
+          pio check -e native --fail-on-defect=high --severity=high || true
 
     - name: Upload lint results
       if: always()
@@ -89,12 +107,23 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Install clang-format
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y clang-format
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: false
+        load: true
+        tags: ble-beacon-parser:ci
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
 
     - name: Check code formatting
       run: |
-        ./scripts/check-format.sh
-
+        docker run --rm \
+          -v ${{ github.workspace }}:/workspace \
+          -w /workspace \
+          ble-beacon-parser:ci \
+          ./scripts/check-format.sh
