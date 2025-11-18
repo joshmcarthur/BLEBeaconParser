@@ -2,6 +2,7 @@
 #define BEACON_DATA_H
 
 #include <stdint.h>
+#include <new>
 #ifdef NATIVE_BUILD
 #include "mock_arduino.h"
 #else

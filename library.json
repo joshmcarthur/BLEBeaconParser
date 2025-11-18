@@ -21,13 +21,10 @@
   "license": "MIT",
   "frameworks": ["arduino"],
   "platforms": ["*"],
+  "srcDir": "lib/BLEBeaconParser/src",
   "repository": {
     "type": "git",
     "url": "https://github.com/joshmcarthur/BLEBeaconParser.git"
   },
-  "homepage": "https://github.com/joshmcarthur/BLEBeaconParser",
-  "examples": [
-    "lib/BLEBeaconParser/examples/generic_example/main.cpp",
-    "lib/BLEBeaconParser/examples/bluefruit_example/main.cpp"
-  ]
+  "homepage": "https://github.com/joshmcarthur/BLEBeaconParser"
 }
