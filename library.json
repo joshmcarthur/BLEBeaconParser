@@ -1,6 +1,6 @@
 {
   "name": "BLEBeaconParser",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Library-agnostic BLE beacon parser for iBeacon, Eddystone, and AltBeacon",
   "keywords": [
     "ble",
@@ -19,8 +19,12 @@
     }
   ],
   "license": "MIT",
-  "frameworks": ["arduino"],
-  "platforms": ["*"],
+  "frameworks": [
+    "arduino"
+  ],
+  "platforms": [
+    "*"
+  ],
   "srcDir": "lib/BLEBeaconParser/src",
   "repository": {
     "type": "git",
